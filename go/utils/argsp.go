@@ -3,13 +3,13 @@ package utils
 import (
 	"fmt"
 	"os"
-	"strings"
+	"path/filepath"
 )
 
 type ArgFiles struct {
-	input1 string
-	input2 string
-	output string
+	Input1 string
+	Input2 string
+	Output string
 }
 
 func ParseArgs(args []string) (ArgFiles, error) {
@@ -73,28 +73,14 @@ func ParseArgs(args []string) (ArgFiles, error) {
 
 	// return successfully
 	return ArgFiles{
-		input1: args[0],
-		input2: args[1],
-		output: args[2],
+		Input1: args[0],
+		Input2: args[1],
+		Output: args[2],
 	}, nil
 }
 
 func checkExt(file string) bool {
-	if len(file) < 4 {
-		return false
-	}
-
-	_, ext, found := strings.Cut(file, ".")
-
-	if !found {
-		return false
-	}
-
-	if ext != "txt" {
-		return false
-	}
-
-	return true
+	return filepath.Ext(file) == ".txt"
 }
 
 func fileExists(path string) (bool, error) {

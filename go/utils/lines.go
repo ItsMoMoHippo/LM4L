@@ -3,22 +3,26 @@ package utils
 import "fmt"
 
 type LineArr struct {
-	lines []string
-	seen  map[string]bool
+	Lines []string
+	Seen  map[string]bool
 }
 
 func (la *LineArr) AddLine(line string) {
+	if line == "" {
+		return
+	}
 	if !la.Has(line) {
-		la.lines = append(la.lines, line)
+		la.Lines = append(la.Lines, line)
+		la.Seen[line] = true
 	}
 }
 
 func (la *LineArr) Has(line string) bool {
-	return la.seen[line]
+	return la.Seen[line]
 }
 
 func (la *LineArr) Print() {
-	for _, line := range la.lines {
+	for _, line := range la.Lines {
 		fmt.Println(line)
 	}
 }
