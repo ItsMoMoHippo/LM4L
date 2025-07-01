@@ -6,6 +6,7 @@ import (
 	"lmgo/utils"
 	"log"
 	"os"
+	"sync"
 )
 
 const (
@@ -84,16 +85,32 @@ EXAMPLES:
 	inline1.Seen = make(map[string]bool)
 	var out utils.LineArr
 	out.Seen = make(map[string]bool)
-	scanner := bufio.NewScanner(in1)
-	for scanner.Scan() {
-		line := scanner.Text()
-		inline1.AddLine(line)
-	}
-	scanner = bufio.NewScanner(in2)
-	for scanner.Scan() {
-		line := scanner.Text()
-		out.AddLine(line)
-	}
+
+	// parallelise
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	// read first file
+	go func() {
+		defer wg.Done()
+		scanner := bufio.NewScanner(in1)
+		for scanner.Scan() {
+			line := scanner.Text()
+			inline1.AddLine(line)
+		}
+	}()
+	// read second file
+	go func() {
+		defer wg.Done()
+		scanner := bufio.NewScanner(in2)
+		for scanner.Scan() {
+			line := scanner.Text()
+			out.AddLine(line)
+		}
+	}()
+	wg.Wait()
+
+	// merge lines
 	for _, line := range inline1.Lines {
 		out.AddLine(line)
 	}
